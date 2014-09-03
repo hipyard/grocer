@@ -3,7 +3,7 @@ require 'json'
 module Grocer
   # Public: An object used to send notifications to APNS.
   class Notification
-    MAX_PAYLOAD_SIZE = 256
+    MAX_PAYLOAD_SIZE = 2048
 
     attr_accessor :identifier, :expiry, :device_token, :alert, :badge, :sound,
                   :custom, :category
