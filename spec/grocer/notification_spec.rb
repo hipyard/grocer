@@ -25,6 +25,11 @@ describe Grocer::Notification do
       expect(payload[:aps][:sound]).to eq('siren.aiff')
     end
 
+    it 'encodes category as part of the payload' do
+      notification.category = 'a category'
+      expect(payload[:aps][:category]).to eq('a category')
+    end
+
     it 'encodes custom payload attributes' do
       notification.custom = { :foo => 'bar' }
       expect(payload[:foo]).to eq('bar')
