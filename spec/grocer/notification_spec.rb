@@ -74,6 +74,58 @@ describe Grocer::Notification do
       it 'raises an error when the size of the payload in bytes is too large' do
         -> { notification.to_bytes }.should raise_error(Grocer::PayloadTooLargeError)
       end
+
+      describe '#payload_too_large?' do
+        subject { notification.payload_too_large? }
+
+        it { should eq true }
+      end
+    end
+
+    describe '#payload_too_large?' do
+      subject { notification.payload_too_large? }
+
+      context 'valid payload' do
+        let(:payload_options) { { alert: 'Alert for a valid payload' } }
+
+        it { should eq false }
+      end
+
+      context 'missing payload' do
+        let(:payload_options) { Hash.new }
+
+        it { should eq false }
+      end
+
+      context 'oversized payload' do
+        let(:payload_options) { { alert: 'a' * (Grocer::Notification::MAX_PAYLOAD_SIZE + 1) } }
+
+        it { should eq true }
+      end
+    end
+
+    # the expectations are the minimum length to expect if we consider the payload is only the alert
+    #   ex: "alert": "content of the alert" is 30
+    describe '#payload_size' do
+      subject { notification.payload_size }
+
+      context 'valid payload' do
+        let(:payload_options) { { alert: 'Alert for a valid payload' } }
+
+        it { should > 34 }
+      end
+
+      context 'missing payload' do
+        let(:payload_options) { Hash.new }
+
+        it { should > 0 }
+      end
+
+      context 'oversized payload' do
+        let(:payload_options) { { alert: 'a' * (Grocer::Notification::MAX_PAYLOAD_SIZE + 1) } }
+
+        it { should > Grocer::Notification::MAX_PAYLOAD_SIZE }
+      end
     end
   end
 end
